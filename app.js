@@ -127,61 +127,87 @@ function renderStudents() {
     let htmlContent = "";
 
     for (let i = 0; i < students.length; i++) {
+
         let student = students[i];
-        let semData = ""; let engData = ""; let phyData = ""; 
-        let chemData = ""; let compData = ""; let mathData = "";
-        let obtainData = ""; let perData = ""; let gradeData = "";
+
+        let semData = "", engData = "", phyData = "", chemData = "";
+        let compData = "", mathData = "", obtainData = "";
+        let perData = "", gradeData = "";
+
+        let totalPercentage = 0;
 
         for (let s = 1; s <= 5; s++) {
-            let currentSem = student.semesters[s];
-            let totalObtained = currentSem.eng + currentSem.phy + currentSem.chem + currentSem.comp + currentSem.math;
-            let percentage = (totalObtained / 500) * 100;
-            let grade = percentage >= 80 ? "A+" : percentage >= 70 ? "A" : "B";
 
-            semData += `<p>${s}st Sem</p>`;
-            engData += `<p>${currentSem.eng}</p>`;
-            phyData += `<p>${currentSem.phy}</p>`;
-            chemData += `<p>${currentSem.chem}</p>`;
-            compData += `<p>${currentSem.comp}</p>`;
-            mathData += `<p>${currentSem.math}</p>`;
-            obtainData += `<p>${totalObtained}</p>`;
+            let sem = student.semesters[s];
+            let obtained = sem.eng + sem.phy + sem.chem + sem.comp + sem.math;
+            let percentage = (obtained / 500) * 100;
+
+            let grade = percentage >= 80 ? "A+" :
+                percentage >= 70 ? "A" :
+                    percentage >= 60 ? "B" : "C";
+
+            totalPercentage += percentage;
+
+            semData += `<p>${s} Sem</p>`;
+            engData += `<p>${sem.eng}</p>`;
+            phyData += `<p>${sem.phy}</p>`;
+            chemData += `<p>${sem.chem}</p>`;
+            compData += `<p>${sem.comp}</p>`;
+            mathData += `<p>${sem.math}</p>`;
+            obtainData += `<p>${obtained}</p>`;
             perData += `<p>${percentage.toFixed(0)}%</p>`;
             gradeData += `<p>${grade}</p>`;
         }
 
+        let avgPercentage = (totalPercentage / 5).toFixed(1);
+
         htmlContent += `
-        <div class="student-card-box" style="margin-bottom: 20px;">
+        <div class="student-card-box" style="margin-bottom:20px;">
+            
             <div class="studentHeader">
-                <h1>${i + 1}- ${student.studentName}</h1>
+                <h1>${i + 1} - ${student.studentName}</h1>
                 <button id="showResult" onclick="showResult(${i})">Show Result</button>
             </div>
-            
-            <div id="data-${i}" class="student-data-active" style="display: none;">
-                <div class="data-column"><h4>Semester</h4>${semData}</div>
-                <div class="data-column"><h4>Eng</h4>${engData}</div>
-                <div class="data-column"><h4>Phy</h4>${phyData}</div>
-                <div class="data-column"><h4>Chem</h4>${chemData}</div>
-                <div class="data-column"><h4>Comp</h4>${compData}</div>
-                <div class="data-column"><h4>Math</h4>${mathData}</div>
-                <div class="data-column"><h4>Obtained</h4>${obtainData}</div>
-                <div class="data-column"><h4>Total</h4><p>500</p><p>500</p><p>500</p><p>500</p><p>500</p></div>
-                <div class="data-column"><h4>%</h4>${perData}</div>
-                <div class="data-column"><h4>Grade</h4>${gradeData}</div>
+
+            <div id="data-${i}" class="student-data-active" style="display:none; flex-direction:column;">
+                
+                <div class="student-table" style="display:flex;">
+                    <div class="data-column"><h4>Semester</h4>${semData}</div>
+                    <div class="data-column"><h4>Eng</h4>${engData}</div>
+                    <div class="data-column"><h4>Phy</h4>${phyData}</div>
+                    <div class="data-column"><h4>Chem</h4>${chemData}</div>
+                    <div class="data-column"><h4>Comp</h4>${compData}</div>
+                    <div class="data-column"><h4>Math</h4>${mathData}</div>
+                    <div class="data-column"><h4>Obtained</h4>${obtainData}</div>
+                    <div class="data-column">
+                        <h4>Total</h4>
+                        <p>500</p><p>500</p><p>500</p><p>500</p><p>500</p>
+                    </div>
+                    <div class="data-column"><h4>%</h4>${perData}</div>
+                    <div class="data-column"><h4>Grade</h4>${gradeData}</div>
+                </div>
+
+                <div class="average-box" style="margin-top:10px; text-align:center; font-weight:bold;">
+                    Overall Average Percentage: ${avgPercentage}%
+                </div>
+
             </div>
-        </div>`;
+        </div>
+        `;
     }
+
     resultBoard.innerHTML = htmlContent;
 }
 
 function showResult(index) {
-    const selectedDiv = document.getElementById(`data-${index}`);
-    const btn = document.querySelectorAll("#showResult")[index];
+    let data = document.getElementById(`data-${index}`);
+    let btn = document.querySelectorAll(".studentHeader button")[index];
 
-    if (selectedDiv.style.display === "none") {
-        selectedDiv.style.display = "flex";
+    if (data.style.display === "none") {
+        data.style.display = "flex";
         btn.innerText = "Hide Result";
     } else {
-        selectedDiv.style.display = "none";
+        data.style.display = "none";
         btn.innerText = "Show Result";
     }
 }
